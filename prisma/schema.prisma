@@ -12,3 +12,121 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+
+model Donneur {
+id            Int @id @default(autoincrement())
+nom           String
+prenom        String
+adresse       String
+telephone     String
+email         String
+groupeSanguin String
+rhesus        String
+don           Don[]
+
+}
+
+model Don {
+id              Int @id @default(autoincrement())
+dateDon         DateTime
+banqueSangId    Int
+donneurId       Int
+typeDon         String
+banquesang      BanqueSang     @relation(fields: [banqueSangId], references: [id])
+donneur         Donneur     @relation(fields: [donneurId], references: [id])
+
+}
+
+model BanqueSang {
+id                  Int @id @default(autoincrement())
+nom                 String
+adresse             String
+telephone           String
+email               String
+produitsSanguins    ProduitSanguin[]
+don                 Don[]
+alerte              Alerte[]
+evenement           Evenement[]
+commande            Commande[]
+
+}
+
+
+model ProduitSanguin {
+id               Int @id @default(autoincrement())
+type_Produit     String
+quantite         Int
+prix             Float
+banque           BanqueSang[]
+commandes        Commande[]
+lignecommande    LigneCommande[]
+
+}
+
+model Evenement {
+id              Int @id @default(autoincrement())
+titre           String
+dateEvenement   DateTime
+heureEvenement  DateTime
+banqueSangId    Int
+description     String
+banquesang      BanqueSang    @relation(fields: [banqueSangId], references: [id])
+
+}
+
+
+model Alerte {
+id              Int @id @default(autoincrement())
+typeSang        String
+niveauUrgence   String
+dateAlerte      DateTime
+banqueSangId    Int
+banquesang      BanqueSang    @relation(fields: [banqueSangId], references: [id])
+
+}
+
+
+model Hopital {
+id           Int  @id @default(autoincrement())
+nom          String
+adresse      String
+telephone    String
+email        String
+commandes    Commande[]
+
+}
+
+
+model Commande {
+id               Int   @id @default(autoincrement())
+dateCommande     DateTime
+hopitalId        Int
+banqueSangId     Int
+modePaiement     String
+modeLivraison    String
+statutCommande   String
+hopital          Hopital     @relation(fields: [hopitalId], references: [id])
+banquesang       BanqueSang    @relation(fields: [banqueSangId], references: [id])
+produitsSanguins ProduitSanguin[]
+LigneCommande    LigneCommande[]
+
+}
+
+
+model LigneCommande {
+id                Int @id @default(autoincrement())
+commandeId        Int
+produitSanguinId  Int
+quantite          Int
+commande          Commande     @relation(fields: [commandeId ], references: [id])
+produitsanguin    ProduitSanguin    @relation(fields: [produitSanguinId], references: [id])
+
+}
+
+
+
+
+
+
